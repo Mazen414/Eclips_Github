@@ -20,7 +20,19 @@ public class Main {
             System.out.print("Enter choice: ");
 
             int choice = scanner.nextInt();
+            String accNum;
 
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Account Number: ");
+                    accNum = scanner.next();
+                    Account acc = bank.findAccount(accNum);
+                    if (acc != null) {
+                        acc.printStatement();
+                    }
+                    break;
+                    
+            }
             if (choice == 5) {
                 System.out.println("Exiting System...");
                 break;
