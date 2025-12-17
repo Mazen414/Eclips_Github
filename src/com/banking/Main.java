@@ -31,7 +31,16 @@ public class Main {
                         acc.printStatement();
                     }
                     break;
-                    
+                case 2:
+                    System.out.print("Enter Account Number: ");
+                    accNum = scanner.next();
+                    Account depositAcc = bank.findAccount(accNum);
+                    if (depositAcc != null) {
+                        System.out.print("Enter Deposit Amount: ");
+                        double amount = scanner.nextDouble();
+                        depositAcc.deposit(amount);
+                    }
+                    break;
             }
             if (choice == 5) {
                 System.out.println("Exiting System...");
