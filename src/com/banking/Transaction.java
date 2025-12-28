@@ -1,5 +1,6 @@
 package com.banking;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Transaction {
@@ -17,6 +18,7 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return timestamp + " | " + type + ": $" + amount + " (" + description + ")";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(timestamp) + " | " + type + ": $" + amount + " (" + description + ")";
     }
 }
