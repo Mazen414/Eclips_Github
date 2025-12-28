@@ -52,6 +52,24 @@ public class Main {
                         withdrawAcc.withdraw(amount);
                     }
                     break;
+                case 4:
+                    System.out.print("Enter Source Account: ");
+                    String srcNum = scanner.next();
+                    Account srcAcc = bank.findAccount(srcNum);
+                    
+                    System.out.print("Enter Destination Account: ");
+                    String destNum = scanner.next();
+                    Account destAcc = bank.findAccount(destNum);
+                    
+                    if (srcAcc != null && destAcc != null) {
+                        System.out.print("Enter Transfer Amount: ");
+                        double amount = scanner.nextDouble();
+                        // This uses the 'Transferable' interface method
+                        srcAcc.transfer(destAcc, amount); 
+                    } else {
+                        System.out.println("Error: One or both accounts not found.");
+                    }
+                    break;
             }
             if (choice == 5) {
                 System.out.println("Exiting System...");
