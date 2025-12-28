@@ -17,20 +17,21 @@ public class Main {
             System.out.println("3. Withdraw");
             System.out.println("4. Transfer");
             System.out.println("5. Create Account");
-            System.out.println("6. Exit");
+            System.out.println("6. View History");
+            System.out.println("7. Exit");
             System.out.print("Enter choice: ");
 
             int choice = scanner.nextInt();
             String accNum;
 
             switch (choice) {
-                case 1:
-                    System.out.print("Enter Account Number: ");
-                    accNum = scanner.next();
-                    Account acc = bank.findAccount(accNum);
-                    if (acc != null) {
-                        acc.printStatement();
-                    }
+            case 1:
+                System.out.print("Enter Account Number: ");
+                accNum = scanner.next();
+                Account acc = bank.findAccount(accNum);
+                if (acc != null) {
+                    System.out.println("Current Balance: $" + acc.getBalance());
+                }
                     break;
                 case 2:
                     System.out.print("Enter Account Number: ");
@@ -90,8 +91,16 @@ public class Main {
                         bank.addAccount(new CheckingAccount(newNum, newBal, limit));
                     }
                     break;
+                case 6:
+                    System.out.print("Enter Account Number: ");
+                    accNum = scanner.next();
+                    Account historyAcc = bank.findAccount(accNum);
+                    if (historyAcc != null) {
+                        historyAcc.printStatement();
+                    }
+                    break;
             }
-            if (choice == 6) {
+            if (choice == 7) {
                 System.out.println("Exiting System...");
                 break;
             }
