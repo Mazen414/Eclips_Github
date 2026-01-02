@@ -9,12 +9,17 @@ public class CheckingAccount extends Account {
 
     @Override
     public void withdraw(double amount) {
-        if (balance + overdraftLimit >= amount) {
+        if (amount <= 0) {
+            System.out.println("Error: Withdraw amount must be positive.");
+            return;
+        }
+
+        if (balance >= amount) {
             balance -= amount;
             addTransaction("Withdraw", amount);
             System.out.println("Withdrawn: $" + amount);
         } else {
-            System.out.println("Error: Overdraft limit exceeded.");
+            System.out.println("Error: Insufficient funds in Savings.");
         }
     }
 }

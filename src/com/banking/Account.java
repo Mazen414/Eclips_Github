@@ -16,7 +16,6 @@ public abstract class Account implements Transferable {
         addTransaction("Initial Creation", balance);
     }
 
-    
     public void deposit(double amount) {
         if (amount > 0) {
             balance += amount;
@@ -40,7 +39,6 @@ public abstract class Account implements Transferable {
         System.out.println("Transfer Failed: Insufficient funds.");
         return false;
     }
-
     
     protected void addTransaction(String type, double amount) {
         transactionHistory.add(new Transaction(type, amount, "Balance: " + balance));
