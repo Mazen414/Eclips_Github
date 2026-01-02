@@ -38,4 +38,17 @@ public class Bank {
         // Account wasn't found (findAccount already printed the error message)
         return false; 
     }
+    
+    public void printTotalAssets() {
+        double totalAssets = 0;
+        
+        for (Account acc : accounts) {
+            totalAssets += acc.getBalance(); // Adds each account's balance to total
+        }
+        
+        System.out.println("---------------------------");
+        System.out.println("TOTAL BANK ASSETS: $" + totalAssets);
+        System.out.println("Total Accounts: " + accounts.size());
+        System.out.println("---------------------------");
+    }
 }
