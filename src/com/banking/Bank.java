@@ -106,19 +106,20 @@ public class Bank {
                 String line = fileScanner.nextLine();
                 String[] parts = line.split(","); // Split by comma
                 
-                // Expected format: ID, Name, Pass, Type, Balance, Rate/Limit
-                if (parts.length == 6) {
+                // Expected format: ID, Name, Pass, Type, Balance, debt, Rate/Limit
+                if (parts.length == 7) {
                     String id = parts[0].trim();
                     String name = parts[1].trim();
                     String pass = parts[2].trim();
                     String type = parts[3].trim();
                     double balance = Double.parseDouble(parts[4].trim());
-                    double extra = Double.parseDouble(parts[5].trim()); // Rate or Limit
+                    double debt = Double.parseDouble(parts[5].trim());
+                    double extra = Double.parseDouble(parts[6].trim()); // Rate or Limit
                     
                     if (type.equalsIgnoreCase("Savings")) {
-                        addAccount(new SavingsAccount(id, name, pass, balance, extra));
+                        addAccount(new SavingsAccount(id, name, pass, balance, debt, extra));
                     } else if (type.equalsIgnoreCase("Checking")) {
-                        addAccount(new CheckingAccount(id, name, pass, balance, extra));
+                        addAccount(new CheckingAccount(id, name, pass, balance, debt, extra));
                     }
                 }
             }
@@ -137,17 +138,19 @@ public class Bank {
             FileWriter writer = new FileWriter(filename); // Overwrites the file
             
             for (Account acc : accounts) {
-                String line = "";
-                // 1. Get common data
-                String common = acc.getAccountNumber() + "," + acc.getAccountHolder() + "," + acc.getPassword();
-                
+            	String type = (acc instanceof SavingsAccount) ? "Savings" : "Checking";
+            	
+            	String line = acc.getAccountNumber() + "," + 
+                        acc.getAccountHolder() + "," + 
+                        acc.getPassword() + "," + 
+                        type + "," + 
+                        acc.getBalance() + "," + 
+                        acc.getLoanDebt();
                 // 2. Add specific data based on type
-                if (acc instanceof SavingsAccount) {
-                    SavingsAccount s = (SavingsAccount) acc;
-                    line = common + ",Savings," + s.getBalance() + "," + s.getInterestRate();
+            	if (acc instanceof SavingsAccount) {
+                    line += "," + ((SavingsAccount) acc).getInterestRate();
                 } else if (acc instanceof CheckingAccount) {
-                    CheckingAccount c = (CheckingAccount) acc;
-                    line = common + ",Checking," + c.getBalance() + "," + c.getOverdraftLimit();
+                    line += "," + ((CheckingAccount) acc).getOverdraftLimit();
                 }
                 
                 // 3. Write to file

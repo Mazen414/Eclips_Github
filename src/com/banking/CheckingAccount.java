@@ -3,8 +3,8 @@ package com.banking;
 public class CheckingAccount extends Account {
     private double overdraftLimit; 
    
-    public CheckingAccount(String id, String name, String pass, double balance, double limit) {
-        super(id, name, pass, balance);
+    public CheckingAccount(String id, String name, String pass, double balance,double debt, double limit) {
+        super(id, name, pass, balance, debt);
         this.overdraftLimit = limit;
     }
 

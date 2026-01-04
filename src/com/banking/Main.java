@@ -36,6 +36,8 @@ public class Main {
             System.out.println("10. Simulate Month End (Interest)");
             System.out.println("11. Export Statement to File");
             System.out.println("12. Exit");
+            System.out.println("13. Apply for Loan ");
+            System.out.println("14. Pay Loan ");            
             System.out.print("Enter choice: ");
 
             try {
@@ -138,11 +140,20 @@ public class Main {
                             System.out.print("Enter Interest Rate (e.g., 0.03): ");
                             double rate = scanner.nextDouble();
                             // Pass the new name/password to the constructor
-                            bank.addAccount(new SavingsAccount(newNum, newName, newPass, newBal, rate));
+                            bank.addAccount(new SavingsAccount(newNum, newName, newPass, newBal, 0.0, rate));
                         } else if (type == 2) {
                             System.out.print("Enter Overdraft Limit: ");
                             double limit = scanner.nextDouble();
-                            bank.addAccount(new CheckingAccount(newNum, newName, newPass, newBal, limit));
+                            bank.addAccount(new CheckingAccount(newNum, newName, newPass, newBal, 0.0,limit));
+                        }
+                        break;
+                        
+                    case 6:
+                        System.out.print("Enter Account Number: ");
+                        accNum = scanner.next();
+                        Account historyAcc = bank.findAccount(accNum);
+                        if (historyAcc != null) {
+                            historyAcc.printStatement();
                         }
                         break;
 
@@ -205,8 +216,31 @@ public class Main {
                         System.exit(0);
                         break;
                         
+                    case 13: 
+                        System.out.print("Enter Account Number: ");
+                        accNum = scanner.next();
+                        Account loanAcc = bank.findAccount(accNum);
+                        if (loanAcc != null) {
+                            System.out.print("Enter Loan Amount: ");
+                            double loanAmt = scanner.nextDouble();
+                            loanAcc.takeLoan(loanAmt);
+                        }
+                        break;
+
+                    case 14: 
+                        System.out.print("Enter Account Number: ");
+                        accNum = scanner.next();
+                        Account payAcc = bank.findAccount(accNum);
+                        if (payAcc != null) {
+                            System.out.println("Current Debt: $" + payAcc.getLoanDebt());
+                            System.out.print("Enter Payment Amount: ");
+                            double payAmt = scanner.nextDouble();
+                            payAcc.payLoan(payAmt);
+                        }
+                        break;
+                        
                     default:
-                        System.out.println("Invalid option. Please enter a number between 1-12.");
+                        System.out.println("Invalid option. Please enter a number between 1-14.");
                 }
             } catch (InputMismatchException e) {
                 // ---  CATCH BLOCK ---

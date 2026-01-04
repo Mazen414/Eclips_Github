@@ -1,6 +1,0 @@
---- Bank Statement for Account: Bahaa1 ---
-Current Balance: $1050.0
---------------------------------------------------
-2026-01-04 20:47:50 | Initial Creation: $1200.0 (Balance: 1200.0)
-2026-01-04 20:50:31 | Withdraw: $300.0 (Balance: 900.0)
-2026-01-04 20:54:23 | Deposit: $150.0 (Balance: 1050.0)
