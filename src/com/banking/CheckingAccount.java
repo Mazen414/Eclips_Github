@@ -15,8 +15,8 @@ public class CheckingAccount extends Account {
             return;
         }
 
-        if (balance >= amount) {
-            balance -= amount;
+        if (balance + overdraftLimit >= amount) {
+        	balance -= amount;
             addTransaction("Withdraw", amount);
             System.out.println("Withdrawn: $" + amount);
         } else {
