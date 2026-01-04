@@ -23,4 +23,5 @@ public class CheckingAccount extends Account {
             System.out.println("Error: Insufficient funds in Savings.");
         }
     }
+    public double getOverdraftLimit() { return overdraftLimit; }
 }

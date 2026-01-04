@@ -199,6 +199,8 @@ public class Main {
                         break;
                         
                     case 12:
+                        System.out.println("Saving data...");
+                        bank.saveUsersToFile("users.txt"); // <--- THIS SAVES EVERYTHING
                         System.out.println("Exiting System...");
                         System.exit(0);
                         break;

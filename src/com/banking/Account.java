@@ -120,4 +120,9 @@ this.transactionHistory = new ArrayList<>();
     public boolean validatePassword(String inputPass) { 
         return this.password.equals(inputPass); 
     }
+    public String getPassword() { return password; }
+    
+    public String getAccountHolder() { 
+        return accountHolder; 
+    }
 }

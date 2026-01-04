@@ -2,6 +2,8 @@ package com.banking;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,6 +128,35 @@ public class Bank {
             System.out.println("Error: Could not find " + filename);
         } catch (Exception e) {
             System.out.println("Error reading file: " + e.getMessage());
+        }
+    }
+    
+ // NEW METHOD: Saves data back to users.txt
+    public void saveUsersToFile(String filename) {
+        try {
+            FileWriter writer = new FileWriter(filename); // Overwrites the file
+            
+            for (Account acc : accounts) {
+                String line = "";
+                // 1. Get common data
+                String common = acc.getAccountNumber() + "," + acc.getAccountHolder() + "," + acc.getPassword();
+                
+                // 2. Add specific data based on type
+                if (acc instanceof SavingsAccount) {
+                    SavingsAccount s = (SavingsAccount) acc;
+                    line = common + ",Savings," + s.getBalance() + "," + s.getInterestRate();
+                } else if (acc instanceof CheckingAccount) {
+                    CheckingAccount c = (CheckingAccount) acc;
+                    line = common + ",Checking," + c.getBalance() + "," + c.getOverdraftLimit();
+                }
+                
+                // 3. Write to file
+                writer.write(line + "\n");
+            }
+            writer.close();
+            System.out.println("Data saved successfully to " + filename);
+        } catch (IOException e) {
+            System.out.println("Error saving data: " + e.getMessage());
         }
     }
 }

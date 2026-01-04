@@ -32,4 +32,5 @@ public class SavingsAccount extends Account {
         deposit(interest);
         System.out.println("Interest applied: $" + interest);
     }
+    public double getInterestRate() { return interestRate; }
 }
