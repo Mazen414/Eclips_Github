@@ -27,6 +27,10 @@ public abstract class Account implements Transferable {
         this.accountHolder = accountHolder;
         this.password = password;
         this.balance = balance;
+        
+this.transactionHistory = new ArrayList<>(); 
+        
+        addTransaction("Initial Creation", balance);
     }
 
     /**
@@ -111,4 +115,9 @@ public abstract class Account implements Transferable {
 
     public String getAccountNumber() { return accountNumber; }
     public double getBalance() { return balance; }
+    
+    
+    public boolean validatePassword(String inputPass) { 
+        return this.password.equals(inputPass); 
+    }
 }

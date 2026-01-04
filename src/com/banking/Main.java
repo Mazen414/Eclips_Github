@@ -67,11 +67,22 @@ public class Main {
                         System.out.print("Enter Account Number: ");
                         accNum = scanner.next();
                         Account withdrawAcc = bank.findAccount(accNum);
+                        
                         if (withdrawAcc != null) {
-                            System.out.print("Enter Withdraw Amount: ");
-                            double amount = scanner.nextDouble();
-                            // Polymorphism: This runs different code for Savings vs Checking!
-                            withdrawAcc.withdraw(amount);
+                            // --- SECURITY CHECK START ---
+                            System.out.print("Enter Password: ");
+                            String pass = scanner.next();
+                            
+                            if (withdrawAcc.validatePassword(pass)) {
+                                // Password Correct: Proceed
+                                System.out.print("Enter Withdraw Amount: ");
+                                double amount = scanner.nextDouble();
+                                withdrawAcc.withdraw(amount);
+                            } else {
+                                // Password Incorrect: Block
+                                System.out.println("Error: Incorrect Password! Access Denied.");
+                            }
+                            // --- SECURITY CHECK END ---
                         }
                         break;
 
@@ -79,18 +90,31 @@ public class Main {
                         System.out.print("Enter Source Account: ");
                         String srcNum = scanner.next();
                         Account srcAcc = bank.findAccount(srcNum);
-
-                        System.out.print("Enter Destination Account: ");
-                        String destNum = scanner.next();
-                        Account destAcc = bank.findAccount(destNum);
-
-                        if (srcAcc != null && destAcc != null) {
-                            System.out.print("Enter Transfer Amount: ");
-                            double amount = scanner.nextDouble();
-                            // This uses the 'Transferable' interface method
-                            srcAcc.transfer(destAcc, amount);
+                        
+                        if (srcAcc != null) {
+                            // --- SECURITY CHECK START ---
+                            System.out.print("Enter Password for " + srcNum + ": ");
+                            String pass = scanner.next();
+                            
+                            if (srcAcc.validatePassword(pass)) {
+                                // Authorized! Now ask for destination
+                                System.out.print("Enter Destination Account: ");
+                                String destNum = scanner.next();
+                                Account destAcc = bank.findAccount(destNum);
+                                
+                                if (destAcc != null) {
+                                    System.out.print("Enter Transfer Amount: ");
+                                    double amount = scanner.nextDouble();
+                                    srcAcc.transfer(destAcc, amount);
+                                } else {
+                                    System.out.println("Error: Destination account not found.");
+                                }
+                            } else {
+                                System.out.println("Error: Incorrect Password. Transfer Cancelled.");
+                            }
+                            // --- SECURITY CHECK END ---
                         } else {
-                            System.out.println("Error: One or both accounts not found.");
+                            System.out.println("Error: Source account not found.");
                         }
                         break;
 
