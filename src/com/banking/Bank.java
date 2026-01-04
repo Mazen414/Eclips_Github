@@ -1,5 +1,8 @@
 package com.banking;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,5 +92,40 @@ public class Bank {
         System.out.println("Month-End Complete.");
         System.out.println("Interest applied to " + savingsAccountsProcessed + " accounts.");
         System.out.println("--------------------------------------");
+    }
+    
+ //  Reads users.txt
+    public void loadUsersFromFile(String filename) {
+        try {
+            File file = new File(filename);
+            Scanner fileScanner = new Scanner(file);
+            
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String[] parts = line.split(","); // Split by comma
+                
+                // Expected format: ID, Name, Pass, Type, Balance, Rate/Limit
+                if (parts.length == 6) {
+                    String id = parts[0].trim();
+                    String name = parts[1].trim();
+                    String pass = parts[2].trim();
+                    String type = parts[3].trim();
+                    double balance = Double.parseDouble(parts[4].trim());
+                    double extra = Double.parseDouble(parts[5].trim()); // Rate or Limit
+                    
+                    if (type.equalsIgnoreCase("Savings")) {
+                        addAccount(new SavingsAccount(id, name, pass, balance, extra));
+                    } else if (type.equalsIgnoreCase("Checking")) {
+                        addAccount(new CheckingAccount(id, name, pass, balance, extra));
+                    }
+                }
+            }
+            fileScanner.close();
+            System.out.println("Data loaded from " + filename);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: Could not find " + filename);
+        } catch (Exception e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
     }
 }

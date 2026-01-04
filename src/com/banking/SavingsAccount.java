@@ -3,9 +3,9 @@ package com.banking;
 public class SavingsAccount extends Account {
     private double interestRate;
 
-    public SavingsAccount(String accountNumber, double balance, double interestRate) {
-        super(accountNumber, balance);
-        this.interestRate = interestRate;
+    public SavingsAccount(String id, String name, String pass, double balance, double rate) {
+    	super(id, name, pass, balance);
+        this.interestRate = rate;
     }
 
     @Override
@@ -28,6 +28,8 @@ public class SavingsAccount extends Account {
     public void applyInterest() {
         double interest = balance * (interestRate / 100);
         deposit(interest); 
+        if(interestRate < 1) interest = balance * interestRate; // Handle decimals like 0.05
+        deposit(interest);
         System.out.println("Interest applied: $" + interest);
     }
 }

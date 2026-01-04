@@ -2,9 +2,10 @@ package com.banking;
 
 public class CheckingAccount extends Account {
     private double overdraftLimit; 
-    public CheckingAccount(String accountNumber, double balance, double overdraftLimit) {
-        super(accountNumber, balance);
-        this.overdraftLimit = overdraftLimit;
+   
+    public CheckingAccount(String id, String name, String pass, double balance, double limit) {
+        super(id, name, pass, balance);
+        this.overdraftLimit = limit;
     }
 
     @Override

@@ -8,8 +8,7 @@ public class Main {
         Bank bank = new Bank();
         Scanner scanner = new Scanner(System.in);
 
-        SavingsAccount user1 = new SavingsAccount("User1", 1000.0, 0.02);
-        bank.addAccount(user1);
+       bank.loadUsersFromFile("users.txt");
 
         System.out.println("==========================================");
         System.out.println("   ____              _    _             ");
@@ -98,29 +97,28 @@ public class Main {
                     case 5:
                         System.out.println("Select Account Type: (1) Savings (2) Checking");
                         int type = scanner.nextInt();
-
+                        
                         System.out.print("Enter New Account Number: ");
                         String newNum = scanner.next();
+                        
+                        System.out.print("Enter Account Holder Name: ");
+                        String newName = scanner.next();
+                        
+                        System.out.print("Set Password: ");
+                        String newPass = scanner.next();
+                        
                         System.out.print("Enter Initial Balance: ");
                         double newBal = scanner.nextDouble();
-
+                        
                         if (type == 1) {
                             System.out.print("Enter Interest Rate (e.g., 0.03): ");
                             double rate = scanner.nextDouble();
-                            bank.addAccount(new SavingsAccount(newNum, newBal, rate));
+                            // Pass the new name/password to the constructor
+                            bank.addAccount(new SavingsAccount(newNum, newName, newPass, newBal, rate));
                         } else if (type == 2) {
                             System.out.print("Enter Overdraft Limit: ");
                             double limit = scanner.nextDouble();
-                            bank.addAccount(new CheckingAccount(newNum, newBal, limit));
-                        }
-                        break;
-
-                    case 6:
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account historyAcc = bank.findAccount(accNum);
-                        if (historyAcc != null) {
-                            historyAcc.printStatement();
+                            bank.addAccount(new CheckingAccount(newNum, newName, newPass, newBal, limit));
                         }
                         break;
 

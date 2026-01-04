@@ -12,6 +12,8 @@ import java.util.List;
 public abstract class Account implements Transferable {
     
     private String accountNumber;
+    private String accountHolder;
+    private String password;
     protected double balance;
     private List<Transaction> transactionHistory;
 
@@ -20,11 +22,11 @@ public abstract class Account implements Transferable {
      * @param accountNumber Unique ID for the account.
      * @param balance Initial deposit amount.
      */
-    public Account(String accountNumber, double balance) {
+    public Account(String accountNumber, String accountHolder, String password, double balance) {
         this.accountNumber = accountNumber;
+        this.accountHolder = accountHolder;
+        this.password = password;
         this.balance = balance;
-        this.transactionHistory = new ArrayList<>();
-        addTransaction("Initial Creation", balance);
     }
 
     /**
