@@ -1,17 +1,9 @@
 package com.banking;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Manages the collection of accounts in the banking system.
- * Handles adding, finding, deleting, and reporting on accounts.
- */
 public class Bank {
     private List<Account> accounts;
 
@@ -19,147 +11,109 @@ public class Bank {
         this.accounts = new ArrayList<>();
     }
 
-    /**
-     * Adds a new account to the bank's database.
-     * @param account The Account object (Savings or Checking) to add.
-     */
     public void addAccount(Account account) {
         accounts.add(account);
-        System.out.println("Account created successfully: " + account.getAccountNumber());
+        System.out.println("Account created: " + account.getAccountNumber());
     }
 
-    /**
-     * Searches for an account by its ID.
-     * @param accountNumber The String ID to search for.
-     * @return The Account object if found, or null if not found.
-     */
     public Account findAccount(String accountNumber) {
         for (Account acc : accounts) {
             if (acc.getAccountNumber().equals(accountNumber)) {
                 return acc;
             }
         }
-        System.out.println("Error: Account " + accountNumber + " not found.");
-        return null;
+        return null; // Return null if not found (Main handles the error message)
     }
 
-    /**
-     * Deletes an account from the system.
-     * @param accountNumber The ID of the account to remove.
-     * @return true if deleted, false if not found.
-     */
     public boolean deleteAccount(String accountNumber) {
-        Account accountToDelete = findAccount(accountNumber);
-        
-        if (accountToDelete != null) {
-            accounts.remove(accountToDelete);
-            return true; 
+        Account acc = findAccount(accountNumber);
+        if (acc != null) {
+            accounts.remove(acc);
+            return true;
         }
-        return false; 
+        return false;
     }
 
-    /**
-     * Calculates and prints the total assets held by the bank.
-     */
     public void printTotalAssets() {
-        double totalAssets = 0;
-        
+        double total = 0;
+        System.out.println("--- All Accounts ---");
         for (Account acc : accounts) {
-            totalAssets += acc.getBalance(); 
+            System.out.println(acc.getAccountNumber() + ": $" + acc.getBalance());
+            total += acc.getBalance();
         }
-        
-        System.out.println("---------------------------");
-        System.out.println("TOTAL BANK ASSETS: $" + totalAssets);
-        System.out.println("Total Accounts: " + accounts.size());
-        System.out.println("---------------------------");
+        System.out.println("TOTAL ASSETS: $" + total);
     }
 
-    /**
-     * Simulates the end of the month processing.
-     * Applies interest to all SavingsAccounts.
-     */
     public void simulateMonthEnd() {
-        System.out.println("\n--- RUNNING MONTH-END SIMULATION ---");
-        int savingsAccountsProcessed = 0;
-        
         for (Account acc : accounts) {
             if (acc instanceof SavingsAccount) {
-                SavingsAccount sAcc = (SavingsAccount) acc;
-                sAcc.applyInterest(); 
-                savingsAccountsProcessed++;
+                ((SavingsAccount) acc).applyInterest();
             }
         }
-        
-        System.out.println("--------------------------------------");
-        System.out.println("Month-End Complete.");
-        System.out.println("Interest applied to " + savingsAccountsProcessed + " accounts.");
-        System.out.println("--------------------------------------");
     }
-    
- //  Reads users.txt
+
+    // ---------------------------------------------------------
+    // 💾 FIXED LOAD METHOD (Matches 6-Column File)
+    // ---------------------------------------------------------
     public void loadUsersFromFile(String filename) {
-        try {
-            File file = new File(filename);
-            Scanner fileScanner = new Scanner(file);
-            
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                String[] parts = line.split(","); // Split by comma
+        File file = new File(filename);
+        if (!file.exists()) return;
+
+        accounts.clear(); // Clear existing list to avoid duplicates
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
                 
-                // Expected format: ID, Name, Pass, Type, Balance, debt, Rate/Limit
-                if (parts.length == 7) {
+                // We check for 6 parts (ID, Name, Pass, Balance, Debt, Rate/Limit)
+                if (parts.length >= 6) {
                     String id = parts[0].trim();
                     String name = parts[1].trim();
                     String pass = parts[2].trim();
-                    String type = parts[3].trim();
-                    double balance = Double.parseDouble(parts[4].trim());
-                    double debt = Double.parseDouble(parts[5].trim());
-                    double extra = Double.parseDouble(parts[6].trim()); // Rate or Limit
-                    
-                    if (type.equalsIgnoreCase("Savings")) {
-                        addAccount(new SavingsAccount(id, name, pass, balance, debt, extra));
-                    } else if (type.equalsIgnoreCase("Checking")) {
-                        addAccount(new CheckingAccount(id, name, pass, balance, debt, extra));
+                    double bal = Double.parseDouble(parts[3].trim());
+                    double debt = Double.parseDouble(parts[4].trim());
+                    double special = Double.parseDouble(parts[5].trim());
+
+                    // LOGIC: If ID starts with 'S', it is Savings. Otherwise Checking.
+                    if (id.toUpperCase().startsWith("S")) {
+                        addAccount(new SavingsAccount(id, name, pass, bal, debt, special));
+                    } else {
+                        addAccount(new CheckingAccount(id, name, pass, bal, debt, special));
                     }
                 }
             }
-            fileScanner.close();
-            System.out.println("Data loaded from " + filename);
-        } catch (FileNotFoundException e) {
-            System.out.println("Error: Could not find " + filename);
+            System.out.println("Database loaded: " + accounts.size() + " accounts.");
         } catch (Exception e) {
-            System.out.println("Error reading file: " + e.getMessage());
+            System.out.println("Error loading file: " + e.getMessage());
         }
     }
-    
- // NEW METHOD: Saves data back to users.txt
+
+    // ---------------------------------------------------------
+    // 💾 FIXED SAVE METHOD (Writes 6-Column File)
+    // ---------------------------------------------------------
     public void saveUsersToFile(String filename) {
-        try {
-            FileWriter writer = new FileWriter(filename); // Overwrites the file
-            
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (Account acc : accounts) {
-            	String type = (acc instanceof SavingsAccount) ? "Savings" : "Checking";
-            	
-            	String line = acc.getAccountNumber() + "," + 
-                        acc.getAccountHolder() + "," + 
-                        acc.getPassword() + "," + 
-                        type + "," + 
-                        acc.getBalance() + "," + 
-                        acc.getLoanDebt();
-                // 2. Add specific data based on type
-            	if (acc instanceof SavingsAccount) {
-                    line += "," + ((SavingsAccount) acc).getInterestRate();
+                // We construct the line WITHOUT the extra "Type" word
+                // Format: ID,Name,Password,Balance,Debt,RateOrLimit
+                String line = acc.getAccountNumber() + "," +
+                              acc.getAccountHolder() + "," +
+                              acc.getPassword() + "," +
+                              acc.getBalance() + "," +
+                              acc.getLoanDebt() + ",";
+
+                if (acc instanceof SavingsAccount) {
+                    line += ((SavingsAccount) acc).getInterestRate();
                 } else if (acc instanceof CheckingAccount) {
-                    line += "," + ((CheckingAccount) acc).getOverdraftLimit();
+                    line += ((CheckingAccount) acc).getOverdraftLimit();
                 }
-                
-                // 3. Write to file
-                writer.write(line + "\n");
+                writer.write(line);
+                writer.newLine();
             }
-            writer.close();
-            System.out.println("Data saved successfully to " + filename);
+            System.out.println("Data saved successfully.");
         } catch (IOException e) {
-            System.out.println("Error saving data: " + e.getMessage());
+            System.out.println("Error saving file: " + e.getMessage());
         }
     }
 }

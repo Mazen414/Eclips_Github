@@ -1,3 +1,10 @@
-S100,Mazen,pass123,Savings,4500.0,0.0,0.05
-C101,Ahmed,secure456,Checking,2000.0,0.0,200.0
-S102,Sara,hello789,Savings,3000.0,0.0,0.03
+S100,Alice,pass123,5000.0,0.0,0.03
+C101,Bob,secure456,1250.0,0.0,500.0
+S102,Charlie,charlie789,10000.5,0.0,0.04
+C103,David,dave2024,250.0,0.0,100.0
+S104,Eve,evepass,3000.0,0.0,0.02
+C105,Frank,frankie,50.0,0.0,1000.0
+S106,Grace,grace1,12500.0,0.0,0.05
+C107,Hank,hank88,800.0,200.0,500.0
+S108,Ivy,ivyleague,450.0,0.0,0.01
+C109,Jack,captain,0.0,0.0,2000.0

@@ -10,7 +10,7 @@ public class SavingsAccount extends Account {
 
     @Override
     public void withdraw(double amount) {
-        // Validation Logic (Push 14)
+        // Validation Logic 
         if (amount <= 0) {
             System.out.println("Error: Withdraw amount must be positive.");
             return;
@@ -26,11 +26,11 @@ public class SavingsAccount extends Account {
     }
 
     public void applyInterest() {
-        double interest = balance * (interestRate / 100);
-        deposit(interest); 
-        if(interestRate < 1) interest = balance * interestRate; // Handle decimals like 0.05
-        deposit(interest);
-        System.out.println("Interest applied: $" + interest);
-    }
+        double interest = balance * interestRate;
+        if (interest > 0) {
+        	deposit(interest);
+            System.out.println("Interest applied: $" + interest);
+          }
+        }
     public double getInterestRate() { return interestRate; }
 }

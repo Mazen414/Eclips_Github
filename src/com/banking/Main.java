@@ -22,6 +22,7 @@ public class Main {
         System.out.println("==========================================");
         System.out.println("        Welcome, " + System.getProperty("user.name") + "!");
         System.out.println("==========================================");
+      
         while (true) {
             System.out.println("\n--- BANKING SYSTEM MENU ---");
             System.out.println("1. View Balance");
@@ -32,7 +33,7 @@ public class Main {
             System.out.println("6. View History");
             System.out.println("7. Calculate Interest (Savings Only)");
             System.out.println("8. Delete Account");
-            System.out.println("9. View Total Bank Assets");
+            System.out.println("9. View Total Bank Assets (Admin)");
             System.out.println("10. Simulate Month End (Interest)");
             System.out.println("11. Export Statement to File");
             System.out.println("12. Exit");
@@ -42,202 +43,139 @@ public class Main {
 
             try {
                 int choice = scanner.nextInt();
-                String accNum;
-
+             // Variables for auth reuse
+                String id, pass;
+                Account acc;
+                
                 switch (choice) {
-                    case 1:
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account acc = bank.findAccount(accNum);
-                        if (acc != null) {
-                            System.out.println("Current Balance: $" + acc.getBalance());
-                        }
-                        break;
+                case 1: // View Balance
+                    acc = authenticateUser(scanner, bank); // <--- Uses helper method below
+                    if (acc != null) {
+                        System.out.println("✅ Current Balance: $" + acc.getBalance());
+                    }
+                    break;
 
-                    case 2:
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account depositAcc = bank.findAccount(accNum);
-                        if (depositAcc != null) {
-                            System.out.print("Enter Deposit Amount: ");
-                            double amount = scanner.nextDouble();
-                            depositAcc.deposit(amount);
-                        }
-                        break;
+                case 2: // Deposit
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        System.out.print("Enter Deposit Amount: ");
+                        acc.deposit(scanner.nextDouble());
+                    }
+                    break;
 
-                    case 3:
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account withdrawAcc = bank.findAccount(accNum);
+                case 3: // Withdraw
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        System.out.print("Enter Withdraw Amount: ");
+                        acc.withdraw(scanner.nextDouble());
+                    }
+                    break;
+
+                case 4: // Transfer
+                    Account srcAcc = authenticateUser(scanner, bank);
+                    if (srcAcc != null) {
+                        System.out.print("Enter Destination Account ID: ");
+                        String destId = scanner.next();
+                        Account destAcc = bank.findAccount(destId);
                         
-                        if (withdrawAcc != null) {
-                            // --- SECURITY CHECK START ---
-                            System.out.print("Enter Password: ");
-                            String pass = scanner.next();
-                            
-                            if (withdrawAcc.validatePassword(pass)) {
-                                // Password Correct: Proceed
-                                System.out.print("Enter Withdraw Amount: ");
-                                double amount = scanner.nextDouble();
-                                withdrawAcc.withdraw(amount);
-                            } else {
-                                // Password Incorrect: Block
-                                System.out.println("Error: Incorrect Password! Access Denied.");
-                            }
-                            // --- SECURITY CHECK END ---
-                        }
-                        break;
-
-                    case 4:
-                        System.out.print("Enter Source Account: ");
-                        String srcNum = scanner.next();
-                        Account srcAcc = bank.findAccount(srcNum);
-                        
-                        if (srcAcc != null) {
-                            // --- SECURITY CHECK START ---
-                            System.out.print("Enter Password for " + srcNum + ": ");
-                            String pass = scanner.next();
-                            
-                            if (srcAcc.validatePassword(pass)) {
-                                // Authorized! Now ask for destination
-                                System.out.print("Enter Destination Account: ");
-                                String destNum = scanner.next();
-                                Account destAcc = bank.findAccount(destNum);
-                                
-                                if (destAcc != null) {
-                                    System.out.print("Enter Transfer Amount: ");
-                                    double amount = scanner.nextDouble();
-                                    srcAcc.transfer(destAcc, amount);
-                                } else {
-                                    System.out.println("Error: Destination account not found.");
-                                }
-                            } else {
-                                System.out.println("Error: Incorrect Password. Transfer Cancelled.");
-                            }
-                            // --- SECURITY CHECK END ---
+                        if (destAcc != null) {
+                            System.out.print("Enter Transfer Amount: ");
+                            srcAcc.transfer(destAcc, scanner.nextDouble());
                         } else {
-                            System.out.println("Error: Source account not found.");
+                            System.out.println("❌ Error: Destination Account Not Found.");
                         }
-                        break;
+                    }
+                    break;
 
-                    case 5:
-                        System.out.println("Select Account Type: (1) Savings (2) Checking");
-                        int type = scanner.nextInt();
-                        
-                        System.out.print("Enter New Account Number: ");
-                        String newNum = scanner.next();
-                        
-                        System.out.print("Enter Account Holder Name: ");
-                        String newName = scanner.next();
-                        
-                        System.out.print("Set Password: ");
-                        String newPass = scanner.next();
-                        
-                        System.out.print("Enter Initial Balance: ");
-                        double newBal = scanner.nextDouble();
-                        
-                        if (type == 1) {
-                            System.out.print("Enter Interest Rate (e.g., 0.03): ");
-                            double rate = scanner.nextDouble();
-                            // Pass the new name/password to the constructor
-                            bank.addAccount(new SavingsAccount(newNum, newName, newPass, newBal, 0.0, rate));
-                        } else if (type == 2) {
-                            System.out.print("Enter Overdraft Limit: ");
-                            double limit = scanner.nextDouble();
-                            bank.addAccount(new CheckingAccount(newNum, newName, newPass, newBal, 0.0,limit));
-                        }
-                        break;
-                        
-                    case 6:
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account historyAcc = bank.findAccount(accNum);
-                        if (historyAcc != null) {
-                            historyAcc.printStatement();
-                        }
-                        break;
+                case 5: // Create Account (No password needed to create new)
+                    System.out.println("Select Account Type: (1) Savings (2) Checking");
+                    int type = scanner.nextInt();
+                    System.out.print("Enter New Account Number: ");
+                    String newNum = scanner.next();
+                    System.out.print("Enter Account Holder Name: ");
+                    String newName = scanner.next();
+                    System.out.print("Set Password: ");
+                    String newPass = scanner.next();
+                    System.out.print("Enter Initial Balance: ");
+                    double newBal = scanner.nextDouble();
+                    
+                    if (type == 1) {
+                        System.out.print("Enter Interest Rate (e.g., 0.03): ");
+                        double rate = scanner.nextDouble();
+                        bank.addAccount(new SavingsAccount(newNum, newName, newPass, newBal, 0.0, rate));
+                    } else if (type == 2) {
+                        System.out.print("Enter Overdraft Limit: ");
+                        double limit = scanner.nextDouble();
+                        bank.addAccount(new CheckingAccount(newNum, newName, newPass, newBal, 0.0, limit));
+                    }
+                    break;
+                    
+                case 6: // View History
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        acc.printStatement();
+                    }
+                    break;
 
-                    case 7:
-                        System.out.print("Enter Savings Account ID to apply interest: ");
-                        String intAccId = scanner.next();
-
-                        // 1. Find the account object
-                        Account interestAccount = bank.findAccount(intAccId);
-
-                        if (interestAccount != null) {
-                            // 2. Check: Is this actually a SavingsAccount?
-                            if (interestAccount instanceof SavingsAccount) {
-                                // 3. Cast: Convert generic 'Account' to 'SavingsAccount'
-                                SavingsAccount savingsAcc = (SavingsAccount) interestAccount;
-                                // 4. Call the method that only exists in SavingsAccount
-                                savingsAcc.applyInterest();
-                            } else {
-                                System.out.println("Error: Account " + intAccId + " is not a Savings Account.");
-                            }
+                case 7: // Calculate Interest
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        if (acc instanceof SavingsAccount) {
+                            ((SavingsAccount) acc).applyInterest();
                         } else {
-                            System.out.println("Error: Account not found.");
+                            System.out.println("❌ Error: Not a Savings Account.");
                         }
-                        break;
+                    }
+                    break;
 
-                    case 8:
-                        System.out.print("Enter Account ID to delete: ");
-                        String delId = scanner.next();
-
-                        boolean isDeleted = bank.deleteAccount(delId);
-
-                        if (isDeleted) {
-                            System.out.println("Account " + delId + " was successfully deleted.");
+                case 8: // Delete Account
+                    System.out.println("⚠ WARNING: You are about to delete an account.");
+                    acc = authenticateUser(scanner, bank); // Require login to delete self
+                    if (acc != null) {
+                        if (bank.deleteAccount(acc.getAccountNumber())) {
+                            System.out.println("✅ Account Deleted Successfully.");
                         }
-                        break;
+                    }
+                    break;
 
-                    case 9:
-                        // Call the method in Bank.java to sum up all accounts
-                        bank.printTotalAssets();
-                        break;
+                case 9: // View Assets (Admin - technically public here)
+                    bank.printTotalAssets();
+                    break;
 
-                    case 10:
-                        bank.simulateMonthEnd();
-                        break;
-                        
-                    case 11:
-                        System.out.print("Enter Account ID to export: ");
-                        accNum = scanner.next();
-                        Account exportAcc = bank.findAccount(accNum);
-                        
-                        if (exportAcc != null) {
-                            exportAcc.exportToTextFile();
-                        }
-                        break;
-                        
-                    case 12:
-                        System.out.println("Saving data...");
-                        bank.saveUsersToFile("users.txt"); // <--- THIS SAVES EVERYTHING
-                        System.out.println("Exiting System...");
-                        System.exit(0);
-                        break;
-                        
-                    case 13: 
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account loanAcc = bank.findAccount(accNum);
-                        if (loanAcc != null) {
-                            System.out.print("Enter Loan Amount: ");
-                            double loanAmt = scanner.nextDouble();
-                            loanAcc.takeLoan(loanAmt);
-                        }
-                        break;
+                case 10: // Month End (System)
+                    bank.simulateMonthEnd();
+                    break;
+                    
+                case 11: // Export
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        acc.exportToTextFile();
+                    }
+                    break;
+                    
+                case 12: // Exit
+                    System.out.println("Saving data...");
+                    bank.saveUsersToFile("users.txt");
+                    System.out.println("Exiting System...");
+                    System.exit(0);
+                    break;
+                    
+                case 13: // Loan
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        System.out.print("Enter Loan Amount: ");
+                        acc.takeLoan(scanner.nextDouble());
+                    }
+                    break;
 
-                    case 14: 
-                        System.out.print("Enter Account Number: ");
-                        accNum = scanner.next();
-                        Account payAcc = bank.findAccount(accNum);
-                        if (payAcc != null) {
-                            System.out.println("Current Debt: $" + payAcc.getLoanDebt());
-                            System.out.print("Enter Payment Amount: ");
-                            double payAmt = scanner.nextDouble();
-                            payAcc.payLoan(payAmt);
-                        }
-                        break;
+                case 14: // Pay Loan
+                    acc = authenticateUser(scanner, bank);
+                    if (acc != null) {
+                        System.out.println("Current Debt: $" + acc.getLoanDebt());
+                        System.out.print("Enter Payment Amount: ");
+                        acc.payLoan(scanner.nextDouble());
+                    }
+                    break;
                         
                     default:
                         System.out.println("Invalid option. Please enter a number between 1-14.");
@@ -252,4 +190,23 @@ public class Main {
             System.out.println("-----------------------------------------");
         }
     }
+
+//--- HELPER METHOD TO REDUCE CODE REPETITION ---
+// This asks for ID and Password, verifies them, and returns the Account object.
+private static Account authenticateUser(Scanner scanner, Bank bank) {
+    System.out.print("Enter Account ID: ");
+    String id = scanner.next();
+    
+    System.out.print("Enter Password: ");
+    String pass = scanner.next();
+    
+    Account acc = bank.findAccount(id);
+    
+    if (acc != null && acc.validatePassword(pass)) {
+        return acc; // Success
+    } else {
+        System.out.println("❌ Access Denied: Invalid ID or Password.");
+        return null; // Failure
+    }
+  }
 }
