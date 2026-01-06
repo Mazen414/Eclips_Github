@@ -43,8 +43,7 @@ public class Main {
 
             try {
                 int choice = scanner.nextInt();
-             // Variables for auth reuse
-                String id, pass;
+
                 Account acc;
                 
                 switch (choice) {
